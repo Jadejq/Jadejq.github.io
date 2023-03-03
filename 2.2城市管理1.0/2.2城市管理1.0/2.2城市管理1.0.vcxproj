@@ -129,6 +129,7 @@
   <ItemGroup>
     <ClCompile Include="2.2城市管理.cpp" />
     <ClCompile Include="SqString.cpp" />
+    <ClCompile Include="System.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SqString.h" />

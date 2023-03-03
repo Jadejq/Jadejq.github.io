@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>
 #include <stdlib.h>
-#define MaxSize 100
+#define MaxSize 500
 
 using namespace std;
 typedef struct

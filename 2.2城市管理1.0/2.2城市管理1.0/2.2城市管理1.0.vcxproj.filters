@@ -21,6 +21,9 @@
     <ClCompile Include="SqString.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="System.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SqString.h">

@@ -1,7 +1,5 @@
 //顺序串基本运算的算法
-#include <iostream>
-#include <stdlib.h>
-#define MaxSize 100
+
 #include"SqString.h"
 using namespace std;
 void StrAssign(SqString& s, char cstr[])	//字符串常量赋给串s
