@@ -63,8 +63,7 @@ DistrictNode* CreateGL(char*& s,int level) {
 				d->val.sub_level = CreateGL(s,level+1);
 			}
 		}
-		else if (ch == '#')
-			d = NULL;
+
 
 		else
 		{
@@ -122,12 +121,11 @@ void DispDistrict(DistrictNode* d,int level=0)			//直观显示
 			if(d->same_level->tag==0)
 			{
 				printf("\n");
-				if(d->tag==0)
-				{
+			
 					for (int i = d->level-level; i > 1; i--) {
 						printf("\t\t\t");
 					}
-				}
+			
 				
 			}
 			else
@@ -201,12 +199,9 @@ void DispMenu(DistrictNode* d)
 		}
 	}
 }
-bool SearchSuperior(DistrictNode* d, SqString str,int count1) //查找上属行政区
+bool SearchSuperior(DistrictNode* d, SqString str,int& count1) //查找上属行政区
 {
-	//if (count1 == 0)
-	//{
-	//	return false;
-	//}
+
 	if (d == NULL)
 	{
 		return false;
@@ -220,7 +215,7 @@ bool SearchSuperior(DistrictNode* d, SqString str,int count1) //查找上属行政区
 	{
 		if (StrEqual(d->val.district, str))
 		{
-			count1--;
+			count1++;
 			return true;
 		}
 		if (SearchSuperior(d->same_level, str, count1)&& d->same_level->tag==1)
@@ -229,17 +224,18 @@ bool SearchSuperior(DistrictNode* d, SqString str,int count1) //查找上属行政区
 			cout << " ";
 			if(d->level==1)
 				cout << endl;
+			return true;
+		}
+		else {
+			return false;
 		}
 	}
 
 	
 }
-void SearchSub(DistrictNode* d, SqString str, int count1) //查找管辖行政区
+void SearchSub(DistrictNode* d, SqString str, int& count1) //查找管辖行政区
 {
-	if (count1 == 0)
-	{
-		return;
-	}
+
 	if (d == NULL)
 	{
 		return;
@@ -254,7 +250,7 @@ void SearchSub(DistrictNode* d, SqString str, int count1) //查找管辖行政区
 	{
 		if (StrEqual(d->val.district, str))
 		{
-			count1--;
+			count1++;
 			if (d->same_level == NULL || d->same_level->tag == 0)
 			{
 				cout << "无管辖地区" << endl;
@@ -269,14 +265,14 @@ void SearchSub(DistrictNode* d, SqString str, int count1) //查找管辖行政区
 
 }
 
-void Search(DistrictNode* d, SqString str,int &count, int & level) {
-	//count统计查找的行政单位出现几次
+void StatisticSame(DistrictNode* d, SqString str,int &count, int & level) {
+	//count统计查找的同名行政单位出现几次
 	if (d != NULL)
 	{
 		if (d->tag == 1)
 		{
-			Search(d->val.sub_level, str, count,level);
-			Search(d->same_level, str, count,level);
+			StatisticSame(d->val.sub_level, str, count,level);
+			StatisticSame(d->same_level, str, count,level);
 		}
 		else if (d->tag == 0)
 		{
@@ -287,7 +283,7 @@ void Search(DistrictNode* d, SqString str,int &count, int & level) {
 			}
 
 
-			Search(d->same_level, str, count,level);
+			StatisticSame(d->same_level, str, count,level);
 		}
 	}
 	
@@ -308,41 +304,36 @@ void SearchMenu(DistrictNode* d)
 		if (choice == 0) {
 			return;
 		}
-		cout << "请输入查找的行政单位：" << endl;
+		else if (choice != 1 && choice != 2)
+		{
+			cout << "输入有误" << endl;
+			break;
+			return;
+		}
+		
 		string s;
+		cout << "请输入查找的行政单位：" << endl;
 		cin >> s;
 		SqString sqs;
 		strcpy_s(sqs.data, s.c_str());
 		sqs.length = s.size();
 		int count = 0;
 		int level = 0;
-		Search(d, sqs, count,level);
-		if (count == 0)
-		{
-			cout << "查找的行政单位不存在" << endl;
-			break;
-		}
-		if(count>1)
-		{
-			cout << "全国共有" << count << "个行政单位与该行政单位同名" << endl;
-		}
+
 		switch (choice)
 		{
 		case 1:
-			if (count > 1)
-				cout << "其所有管辖行政单位分别是：" << endl;
-			else
-				cout << "其所有管辖行政单位有：" << endl;
+			cout << "其所有管辖行政单位有：" << endl;
 			SearchSub(d, sqs, count);
 			cout << endl;
+			cout << "全国共有" << count << "个同名行政单位" << endl;
+			
 			break;
 		case 2:
-			if (count > 1)
-				cout << "其所有上属行政单位分别是：" << endl;
-			else
-				cout << "其所有上属行政单位有：" << endl;
+			cout << "其所有上属行政单位有：" << endl;
 			SearchSuperior(d, sqs,count);
 			cout << endl;
+			cout << "全国共有" << count << "个同名行政单位" << endl;
 			break;
 		
 		default:
@@ -367,13 +358,13 @@ void Statistic(DistrictNode* d,int& total,int & no_sub)
 			{
 				no_sub++;
 			}
-			Statistic(d->same_level, total, no_sub);
+			
 		}
 		else
 		{
 			Statistic(d->val.sub_level, total, no_sub);
-			Statistic(d->same_level, total, no_sub);
 		}
+		Statistic(d->same_level, total, no_sub);
 
 	}
 }
@@ -390,13 +381,12 @@ void StatisticLevel(DistrictNode* d, int level,int& level_statistic)
 				cout << endl;*/
 			}
 			
-			StatisticLevel(d->same_level, level, level_statistic);
 		}
 		else
 		{
 			StatisticLevel(d->val.sub_level, level, level_statistic);
-			StatisticLevel(d->same_level, level, level_statistic);
 		}
+		StatisticLevel(d->same_level, level, level_statistic);
 
 	}
 }
